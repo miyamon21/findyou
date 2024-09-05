@@ -1,5 +1,6 @@
 package com.example.findyou
 
+import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -11,6 +12,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.navigation.NavController
 
 fun navigateTo(navController: NavController,route: String){
@@ -34,3 +36,13 @@ fun CommonProgressSpinner(){
         CircularProgressIndicator()
     }
 }
+
+@Composable
+fun NotificationMessage(findYouViewModel: FindYouViewModel){
+    val notificationState = findYouViewModel.popupNotification.value
+    val notificationMsg = notificationState.getContentOrNull()
+    if (!notificationMsg.isNullOrEmpty()){
+        Toast.makeText(LocalContext.current, notificationMsg, Toast.LENGTH_SHORT).show()
+    }
+}
+
