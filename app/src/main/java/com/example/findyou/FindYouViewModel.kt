@@ -5,6 +5,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import com.example.findyou.data.COLLECTION_USER
 import com.example.findyou.data.Event
+import com.example.findyou.data.UserData
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.storage.FirebaseStorage
@@ -22,6 +23,10 @@ class FindYouViewModel @Inject constructor(
     val inProgress = mutableStateOf(false)
     val popupNotification = mutableStateOf<Event<String?>>(Event(null))
 
+
+    /*
+    * Authenticationへ登録
+    */
     fun onSignUp(username : String, email:String,password : String){
         if (username.isEmpty() || email.isEmpty() || password.isEmpty()){
             handleException(customMessage = "Please fill in all fields")
@@ -35,6 +40,7 @@ class FindYouViewModel @Inject constructor(
                         .addOnCompleteListener { task ->
                             if (task.isSuccessful) {
                                 // Create user profile in database
+                                createOrUpdateProfile(userName = username)
                             } else {
                                 handleException(task.exception, "Signup Failed")
                             }
@@ -47,6 +53,43 @@ class FindYouViewModel @Inject constructor(
             .addOnFailureListener{ failMsg->
                 handleException(failMsg)
             }
+    }
+
+    /*
+    * FireStoneへ登録・上書き
+    */
+    private fun createOrUpdateProfile(
+        name : String? = null,
+        userName : String? = null,
+        bio : String? = null,
+        imageUrl : String? = null
+    ){
+        val userId = auth.currentUser?.uid
+        val userData = UserData(
+            userId = userId,
+            name = name,
+            userName = userName,
+            imageUrl = imageUrl,
+            bio = bio
+        )
+
+        userId?.let {userId ->
+            inProgress.value = true
+            db.collection(COLLECTION_USER).document(userId).get()
+                .addOnSuccessListener {
+                    if (it.exists()) {
+                        it.reference.update(userData.toMap())
+                            .addOnSuccessListener { inProgress.value = false }
+                            .addOnFailureListener { handleException(it, "Cannot Update user") }
+                    } else {
+                        db.collection(COLLECTION_USER).document(userId).set(userData)
+                        inProgress.value = false
+                    }
+                }
+                .addOnFailureListener {
+                    handleException(it,"Cannot crate user")
+                }
+        }
     }
 
     private fun handleException(exception: Exception? = null,customMessage : String = ""){
