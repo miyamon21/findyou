@@ -34,7 +34,7 @@ import com.example.findyou.R
 import com.example.findyou.navigateTo
 
 @Composable
-fun SignupScreen(navController : NavController) {
+fun SignupScreen(navController : NavController,viewModel: FindYouViewModel) {
 
     Box(modifier = Modifier.fillMaxSize()) {
         Column(
@@ -122,6 +122,10 @@ fun SignupScreen(navController : NavController) {
                     .padding(8.dp)
                     .clickable { navigateTo(navController, DestinationScreen.Login.route) }
             )
+        }
+        val isLoading = viewModel.inProgress.value
+        if (isLoading){
+            CommonProgressSpinner()
         }
     }
 }
