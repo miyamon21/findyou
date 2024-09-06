@@ -49,6 +49,7 @@ class FindYouViewModel @Inject constructor(
                         .addOnCompleteListener { task ->
                             if (task.isSuccessful) {
                                 // Create user profile in database
+                                signedIn.value = true
                                 createOrUpdateProfile(userName = username)
                             } else {
                                 handleException(task.exception, "Signup Failed")
@@ -92,7 +93,10 @@ class FindYouViewModel @Inject constructor(
                 .addOnSuccessListener {
                     if (it.exists()) {
                         it.reference.update(userData.toMap())
-                            .addOnSuccessListener { inProgress.value = false }
+                            .addOnSuccessListener {
+                                this.userData.value = userData
+                                inProgress.value = false
+                            }
                             .addOnFailureListener { handleException(it, "Cannot Update user") }
                     } else {
                         db.collection(COLLECTION_USER).document(userId).set(userData)

@@ -6,7 +6,9 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -15,6 +17,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 
 fun navigateTo(navController: NavController,route: String){
@@ -54,9 +57,18 @@ fun CheckSignedIn(viewModel : FindYouViewModel,navController: NavController){
     val signedIn = viewModel.signedIn.value
     if (signedIn && !alreadyLoggedIn.value){
         alreadyLoggedIn.value = true
-        navController.navigate(DestinationScreen.Swipe.route){
+        navController.navigate(DestinationScreen.Profile.route){
             popUpTo(0)
         }
     }
+}
+
+@Composable
+fun CommonDivider(){
+    HorizontalDivider(
+        modifier = Modifier.alpha(0.3f).padding(bottom = 8.dp),
+        thickness = 1.dp,
+        color = Color.LightGray
+    )
 }
 
