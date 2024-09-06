@@ -23,6 +23,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontFamily
+import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -91,7 +92,8 @@ fun LoginScreen(navController : NavController,viewModel : FindYouViewModel){
                     Text(
                         text = "Enter Password"
                     )
-                }
+                },
+                visualTransformation = PasswordVisualTransformation()
             )
 
             Button(
