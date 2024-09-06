@@ -65,7 +65,7 @@ fun SwipeAppNavigation(){
             SignupScreen(navController,viewModel)
         }
         composable(DestinationScreen.Login.route){
-            LoginScreen()
+            LoginScreen(navController,viewModel)
         }
         composable(DestinationScreen.Swipe.route){
             SwipeCards(navController)
