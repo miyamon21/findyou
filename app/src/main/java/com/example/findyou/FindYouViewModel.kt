@@ -50,7 +50,7 @@ class FindYouViewModel @Inject constructor(
                             if (task.isSuccessful) {
                                 // Create user profile in database
                                 signedIn.value = true
-                                createOrUpdateProfile(userName = username)
+                                createOrUpdateProfile(username = username)
                             } else {
                                 handleException(task.exception, "Signup Failed")
                             }
@@ -70,7 +70,7 @@ class FindYouViewModel @Inject constructor(
     */
     private fun createOrUpdateProfile(
         name : String? = null,
-        userName : String? = null,
+        username : String? = null,
         bio : String? = null,
         imageUrl : String? = null,
         gender : Gender? = null,
@@ -80,7 +80,7 @@ class FindYouViewModel @Inject constructor(
         val userData = UserData(
             userId = userId,
             name = name ?: userData.value?.name,
-            userName = userName ?: userData.value?.userName,
+            username = username ?: userData.value?.username,
             imageUrl = imageUrl ?: userData.value?.imageUrl,
             bio = bio ?: userData.value?.bio,
             gender = gender?.toString() ?: userData.value?.gender,
@@ -152,6 +152,24 @@ class FindYouViewModel @Inject constructor(
         signedIn.value = false
         userData.value = null
         popupNotification.value = Event("Logged out")
+    }
+
+    fun updateProfileData(
+        name: String,
+        username: String,
+        bio: String,
+        gender: Gender,
+        genderPreference: Gender
+    ){
+        createOrUpdateProfile(
+            name=name,
+            username=username,
+            bio=bio,
+            gender = gender,
+            genderPreference = genderPreference
+
+        )
+
     }
 
     private fun handleException(exception: Exception? = null,customMessage : String = ""){

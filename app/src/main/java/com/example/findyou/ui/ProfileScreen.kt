@@ -52,7 +52,7 @@ fun ProfileScreen(navController: NavController, viewModel: FindYouViewModel) {
             mutableStateOf(userData?.name ?: "")
         }
         var username by rememberSaveable {
-            mutableStateOf(userData?.userName ?: "")
+            mutableStateOf(userData?.username ?: "")
         }
         var bio by rememberSaveable {
             mutableStateOf(userData?.bio ?: "")
@@ -83,7 +83,9 @@ fun ProfileScreen(navController: NavController, viewModel: FindYouViewModel) {
                 onBioChange = { bio = it },
                 onGenderChange = { gender = it },
                 onGenderPreferenceChange = { genderPreferences = it },
-                onSave = {},
+                onSave = {
+                    viewModel.updateProfileData(name,username,bio,gender,genderPreferences)
+                },
                 onBack = {
                     navigateTo(
                         navController = navController,
@@ -193,7 +195,7 @@ fun ProfileContent(
                 .padding(4.dp), verticalAlignment = Alignment.CenterVertically
         ) {
             Text(
-                text = "I am a:", modifier = Modifier
+                text = "I am a : ", modifier = Modifier
                     .height(100.dp)
                     .padding(8.dp)
             )
@@ -238,7 +240,7 @@ fun ProfileContent(
                 .padding(4.dp), verticalAlignment = Alignment.CenterVertically
         ) {
             Text(
-                text = "I am a:", modifier = Modifier
+                text = "Looking\nfor:", modifier = Modifier
                     .height(100.dp)
                     .padding(8.dp)
             )

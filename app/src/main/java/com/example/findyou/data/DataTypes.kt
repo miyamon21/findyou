@@ -3,7 +3,7 @@ package com.example.findyou.data
 data class UserData(
     var userId : String? = "",
     var name : String? = "",
-    var userName : String? = "",
+    var username : String? = "",
     var imageUrl : String? = "",
     var bio : String? = "",
     var gender : String? = "",
@@ -12,7 +12,7 @@ data class UserData(
     fun toMap()= mapOf(
         "userId" to userId,
         "name" to name,
-        "username" to userName,
+        "username" to username,
         "imageUrl" to imageUrl,
         "bio" to bio,
         "gender" to gender,
