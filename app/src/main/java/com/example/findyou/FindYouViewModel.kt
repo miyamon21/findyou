@@ -116,6 +116,28 @@ class FindYouViewModel @Inject constructor(
             }
     }
 
+    fun onLogin(email: String,password: String){
+        if (email.isEmpty() || password.isEmpty()){
+            handleException(customMessage = "Please fill in all fields")
+        }
+        inProgress.value = true
+        auth.signInWithEmailAndPassword(email,password)
+            .addOnCompleteListener { task ->
+                if (task.isSuccessful){
+                    signedIn.value = true
+                    inProgress.value = false
+                    auth.currentUser?.uid?.let {
+                        getUserData(it)
+                    }
+                }else{
+                    handleException(task.exception,customMessage = "Login failed")
+                }
+            }
+            .addOnFailureListener {
+                handleException(it,"Login failed")
+            }
+    }
+
     private fun handleException(exception: Exception? = null,customMessage : String = ""){
         Log.e("FindYou", "FindYou Exception",exception)
         exception?.printStackTrace()
