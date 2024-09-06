@@ -27,6 +27,7 @@ import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import com.example.findyou.CheckSignedIn
 import com.example.findyou.CommonProgressSpinner
 import com.example.findyou.DestinationScreen
 import com.example.findyou.FindYouViewModel
@@ -35,6 +36,8 @@ import com.example.findyou.navigateTo
 
 @Composable
 fun SignupScreen(navController : NavController,viewModel: FindYouViewModel) {
+
+    CheckSignedIn(viewModel = viewModel, navController = navController)
 
     Box(modifier = Modifier.fillMaxSize()) {
         Column(

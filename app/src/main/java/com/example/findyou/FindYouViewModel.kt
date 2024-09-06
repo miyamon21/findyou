@@ -8,6 +8,7 @@ import com.example.findyou.data.Event
 import com.example.findyou.data.UserData
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.toObject
 import com.google.firebase.storage.FirebaseStorage
 import dagger.hilt.android.lifecycle.HiltViewModel
 import java.lang.Exception
@@ -22,7 +23,14 @@ class FindYouViewModel @Inject constructor(
 
     val inProgress = mutableStateOf(false)
     val popupNotification = mutableStateOf<Event<String?>>(Event(null))
+    var signedIn = mutableStateOf(false)
+    val userData = mutableStateOf<UserData?>(null)
 
+    init {
+        val currentUser = auth.currentUser
+        signedIn.value= currentUser != null
+        currentUser?.uid?.let { getUserData(userId = it) }
+    }
 
     /*
     * Authenticationへ登録
@@ -84,12 +92,28 @@ class FindYouViewModel @Inject constructor(
                     } else {
                         db.collection(COLLECTION_USER).document(userId).set(userData)
                         inProgress.value = false
+                        getUserData(userId)
                     }
                 }
                 .addOnFailureListener {
                     handleException(it,"Cannot crate user")
                 }
         }
+    }
+
+    private fun getUserData(userId : String){
+        inProgress.value = true
+        db.collection(COLLECTION_USER).document(userId)
+            .addSnapshotListener { value, error ->
+                if (error != null){
+                    handleException(error,"Cannot retrieve user data")
+                }
+                if (value != null){
+                    val user = value.toObject<UserData>()
+                    userData.value = user
+                    inProgress.value = false
+                }
+            }
     }
 
     private fun handleException(exception: Exception? = null,customMessage : String = ""){
