@@ -75,10 +75,10 @@ class FindYouViewModel @Inject constructor(
         val userId = auth.currentUser?.uid
         val userData = UserData(
             userId = userId,
-            name = name,
-            userName = userName,
-            imageUrl = imageUrl,
-            bio = bio
+            name = name ?: userData.value?.name,
+            userName = userName ?: userData.value?.userName,
+            imageUrl = imageUrl ?: userData.value?.imageUrl,
+            bio = bio ?: userData.value?.bio
         )
 
         userId?.let {userId ->
@@ -136,6 +136,13 @@ class FindYouViewModel @Inject constructor(
             .addOnFailureListener {
                 handleException(it,"Login failed")
             }
+    }
+
+    fun onLogout(){
+        auth.signOut()
+        signedIn.value = false
+        userData.value = null
+        popupNotification.value = Event("Logged out")
     }
 
     private fun handleException(exception: Exception? = null,customMessage : String = ""){
