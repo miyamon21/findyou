@@ -6,6 +6,7 @@ import androidx.lifecycle.ViewModel
 import com.example.findyou.data.COLLECTION_USER
 import com.example.findyou.data.Event
 import com.example.findyou.data.UserData
+import com.example.findyou.ui.Gender
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.toObject
@@ -70,7 +71,9 @@ class FindYouViewModel @Inject constructor(
         name : String? = null,
         userName : String? = null,
         bio : String? = null,
-        imageUrl : String? = null
+        imageUrl : String? = null,
+        gender : Gender? = null,
+        genderPreference : Gender? = null
     ){
         val userId = auth.currentUser?.uid
         val userData = UserData(
@@ -78,7 +81,9 @@ class FindYouViewModel @Inject constructor(
             name = name ?: userData.value?.name,
             userName = userName ?: userData.value?.userName,
             imageUrl = imageUrl ?: userData.value?.imageUrl,
-            bio = bio ?: userData.value?.bio
+            bio = bio ?: userData.value?.bio,
+            gender = gender?.toString() ?: userData.value?.gender,
+            genderPreference = genderPreference?.toString() ?: userData.value?.genderPreference
         )
 
         userId?.let {userId ->
