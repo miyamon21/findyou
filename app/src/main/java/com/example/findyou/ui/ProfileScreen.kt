@@ -1,16 +1,24 @@
 package com.example.findyou.ui
 
+import android.net.Uri
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.Card
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Text
@@ -30,6 +38,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.example.findyou.CommonDivider
+import com.example.findyou.CommonImage
 import com.example.findyou.CommonProgressSpinner
 import com.example.findyou.DestinationScreen
 import com.example.findyou.FindYouViewModel
@@ -48,6 +57,8 @@ fun ProfileScreen(navController: NavController, viewModel: FindYouViewModel) {
         CommonProgressSpinner()
     } else {
         val userData = viewModel.userData.value
+        val g = if (userData?.gender.isNullOrEmpty()) "ANY" else userData!!.gender!!.uppercase()
+        val gPref = if (userData?.gender.isNullOrEmpty()) "ANY" else userData!!.gender!!.uppercase()
         var name by rememberSaveable {
             mutableStateOf(userData?.name ?: "")
         }
@@ -58,10 +69,10 @@ fun ProfileScreen(navController: NavController, viewModel: FindYouViewModel) {
             mutableStateOf(userData?.bio ?: "")
         }
         var gender by rememberSaveable {
-            mutableStateOf(Gender.valueOf(userData?.gender?.uppercase() ?: "ANY"))
+            mutableStateOf(Gender.valueOf(g))
         }
         var genderPreferences by rememberSaveable {
-            mutableStateOf(Gender.valueOf(userData?.genderPreference?.uppercase() ?: "ANY"))
+            mutableStateOf(Gender.valueOf(gPref))
         }
 
         val scrollState = rememberScrollState()
@@ -141,7 +152,7 @@ fun ProfileContent(
 
         CommonDivider()
 
-        ProfileImage()
+        ProfileImage(imageUrl=imageUrl, viewModel = viewModel)
 
         CommonDivider()
 
@@ -294,6 +305,35 @@ fun ProfileContent(
 }
 
 @Composable
-fun ProfileImage() {
+fun ProfileImage(imageUrl : String?,viewModel: FindYouViewModel) {
 
+    val launcher = rememberLauncherForActivityResult(contract = ActivityResultContracts.GetContent(),
+    ){ uri: Uri? ->
+        uri?.let { viewModel.uploadProfileImage(uri) }
+    }
+
+    Box(modifier = Modifier.height(IntrinsicSize.Min)){
+        Column(modifier = Modifier
+            .padding(8.dp)
+            .fillMaxWidth()
+            .clickable {
+                //select an image
+                launcher.launch("image/*")
+            },
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            Card(shape = CircleShape, modifier = Modifier
+                .padding(8.dp)
+                .size(100.dp)
+            ) {
+                CommonImage(data = imageUrl)
+            }
+            Text(text = "Change profile picture")
+        }
+
+        val isLoading = viewModel.inProgress.value
+        if (isLoading) {
+            CommonProgressSpinner()
+        }
+    }
 }
