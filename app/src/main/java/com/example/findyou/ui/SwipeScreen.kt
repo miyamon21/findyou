@@ -97,8 +97,10 @@ fun SwipeScreen(navController: NavController, viewModel: FindYouViewModel) {
                         if (state.swipedDirection != null) {
                             if (state.swipedDirection == Direction.Down || state.swipedDirection == Direction.Left) {
                                 //dislike
+                                viewModel.onDislike(matchProfiles)
                             } else {
                                 //like
+                                viewModel.onLike(matchProfiles)
                             }
                         }
                     }
