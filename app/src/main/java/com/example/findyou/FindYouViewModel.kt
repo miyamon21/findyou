@@ -9,6 +9,7 @@ import com.example.findyou.data.Event
 import com.example.findyou.data.UserData
 import com.example.findyou.ui.Gender
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.firestore.Filter
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.toObject
 import com.google.firebase.storage.FirebaseStorage
@@ -28,6 +29,9 @@ class FindYouViewModel @Inject constructor(
     val popupNotification = mutableStateOf<Event<String?>>(Event(null))
     var signedIn = mutableStateOf(false)
     val userData = mutableStateOf<UserData?>(null)
+
+    val matchProfiles = mutableStateOf<List<UserData>>(listOf())
+    val inProgressProfiles = mutableStateOf(false)
 
     init {
         val currentUser = auth.currentUser
@@ -98,6 +102,7 @@ class FindYouViewModel @Inject constructor(
                             .addOnSuccessListener {
                                 this.userData.value = userData
                                 inProgress.value = false
+                                populateCards()
                             }
                             .addOnFailureListener { handleException(it, "Cannot Update user") }
                     } else {
@@ -123,6 +128,7 @@ class FindYouViewModel @Inject constructor(
                     val user = value.toObject<UserData>()
                     userData.value = user
                     inProgress.value = false
+                    populateCards()
                 }
             }
     }
@@ -209,5 +215,60 @@ class FindYouViewModel @Inject constructor(
 
         popupNotification.value = Event(message)
         inProgress.value = false
+    }
+
+
+    private fun populateCards() {
+        inProgressProfiles.value = true
+
+        val g =
+            if (userData.value?.gender.isNullOrEmpty()) "ANY" else userData.value!!.gender!!.uppercase()
+        val gPref =
+            if (userData.value?.genderPreference.isNullOrEmpty()) "ANY" else userData.value!!.genderPreference!!.uppercase()
+
+        val cardsQuery = when (Gender.valueOf(gPref)) {
+            Gender.MALE -> db.collection(COLLECTION_USER)
+                .whereEqualTo("gender", Gender.MALE)
+
+            Gender.FEMALE -> db.collection(COLLECTION_USER).whereEqualTo("gender", Gender.FEMALE)
+            Gender.ANY -> db.collection(COLLECTION_USER).whereEqualTo("gender", Gender.ANY)
+        }
+
+        val userGender = Gender.valueOf(g)
+
+        cardsQuery.where(
+            Filter.and(
+                Filter.notEqualTo("userId", userData.value?.userId),
+                Filter.or(
+                    Filter.equalTo("genderPreference", userGender),
+                    Filter.equalTo("genderPreference", Gender.ANY)
+                )
+            )
+        )
+            .addSnapshotListener { value, error ->
+                if (error != null) {
+                    inProgressProfiles.value = false
+                    handleException(error)
+                }
+                if (value != null) {
+                    val potentials = mutableListOf<UserData>()
+                    value.documents.forEach {
+                        it.toObject<UserData>()?.let { potential ->
+                            var showUser = true
+                            if (userData?.value?.swipeLeft?.contains(potential.userId) == true ||
+                                userData?.value?.swipeRight?.contains(potential.userId) == true ||
+                                userData?.value?.matches?.contains(potential.userId) == true
+                            )
+                                showUser = false
+                            if (showUser) {
+                                potentials.add(potential)
+                            }
+                        }
+                    }
+
+                    matchProfiles.value = potentials
+                    inProgressProfiles.value = false
+                }
+            }
     }
 }
