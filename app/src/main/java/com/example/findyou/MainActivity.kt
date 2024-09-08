@@ -18,7 +18,7 @@ import com.example.findyou.ui.LoginScreen
 import com.example.findyou.ui.ProfileScreen
 import com.example.findyou.ui.SignupScreen
 import com.example.findyou.ui.SingleChatScreen
-import com.example.findyou.ui.SwipeCards
+import com.example.findyou.ui.SwipeScreen
 import com.example.findyou.ui.theme.FindYouTheme
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -68,7 +68,7 @@ fun SwipeAppNavigation(){
             LoginScreen(navController,viewModel)
         }
         composable(DestinationScreen.Swipe.route){
-            SwipeCards(navController)
+            SwipeScreen(navController, viewModel)
         }
         composable(DestinationScreen.Profile.route){
             ProfileScreen(navController,viewModel)
