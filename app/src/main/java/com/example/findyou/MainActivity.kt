@@ -6,7 +6,6 @@ import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
-
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -57,7 +56,7 @@ class MainActivity : ComponentActivity() {
 fun SwipeAppNavigation(){
     val navController = rememberNavController()
     val viewModel = hiltViewModel<FindYouViewModel>()
-    
+
     NotificationMessage(findYouViewModel = viewModel)
 
     NavHost(navController = navController, startDestination = DestinationScreen.Signup.route){
@@ -77,7 +76,10 @@ fun SwipeAppNavigation(){
             ChatListScreen(navController,viewModel)
         }
         composable(DestinationScreen.SingleChat.route){
-            SingleChatScreen(chatId = "123")
+            val chatId = it.arguments?.getString("chatId")
+            chatId?.let {
+            SingleChatScreen(navController,viewModel,chatId = it)
+            }
         }
     }
 }
