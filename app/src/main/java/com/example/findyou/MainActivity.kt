@@ -74,7 +74,7 @@ fun SwipeAppNavigation(){
             ProfileScreen(navController,viewModel)
         }
         composable(DestinationScreen.ChatList.route){
-            ChatListScreen(navController)
+            ChatListScreen(navController,viewModel)
         }
         composable(DestinationScreen.SingleChat.route){
             SingleChatScreen(chatId = "123")
