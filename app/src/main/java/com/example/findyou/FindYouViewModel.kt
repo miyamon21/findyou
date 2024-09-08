@@ -5,20 +5,24 @@ import android.util.Log
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import com.example.findyou.data.COLLECTION_CHAT
+import com.example.findyou.data.COLLECTION_MESSAGES
 import com.example.findyou.data.COLLECTION_USER
 import com.example.findyou.data.ChatData
 import com.example.findyou.data.ChatUser
 import com.example.findyou.data.Event
+import com.example.findyou.data.Messages
 import com.example.findyou.data.UserData
 import com.example.findyou.ui.Gender
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.Filter
 import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.ListenerRegistration
 import com.google.firebase.firestore.toObject
 import com.google.firebase.storage.FirebaseStorage
 import dagger.hilt.android.lifecycle.HiltViewModel
 import java.lang.Exception
+import java.util.Calendar
 import java.util.UUID
 import javax.inject.Inject
 
@@ -39,6 +43,10 @@ class FindYouViewModel @Inject constructor(
 
     val chats = mutableStateOf<List<ChatData>>(listOf())
     val inProgressChats = mutableStateOf(false)
+
+    val chatMessages = mutableStateOf<List<Messages>>(listOf())
+    val inProgressMessages = mutableStateOf(false)
+    var currentChatMessagesListener : ListenerRegistration? = null
 
 
     init {
@@ -338,6 +346,37 @@ class FindYouViewModel @Inject constructor(
             inProgressChats.value = false
 
         }
+    }
+
+    fun onSendReply(chatId : String, message : String){
+        val time = Calendar.getInstance().time.toString()
+        val message = Messages(userData.value?.userId,message,time)
+
+        db.collection(COLLECTION_CHAT).document(chatId)
+            .collection(COLLECTION_MESSAGES).document()
+            .set(message)
+    }
+
+    fun populateChat(chatId: String){
+        inProgressMessages.value = true
+        currentChatMessagesListener = db.collection(COLLECTION_CHAT).document(chatId).collection(
+            COLLECTION_MESSAGES).addSnapshotListener{value,error ->
+            if (error != null){
+                handleException(error)
+            }
+            if (value != null){
+                chatMessages.value = value.documents
+                    .mapNotNull { it.toObject<Messages>() }
+                    .sortedBy { it.timeStamp }
+            }
+            inProgressMessages.value = false
+        }
+    }
+
+    fun depopulateChat(){
+        currentChatMessagesListener = null
+        chatMessages.value = listOf()
+
     }
 }
 
