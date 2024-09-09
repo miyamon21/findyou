@@ -58,7 +58,7 @@ fun ProfileScreen(navController: NavController, viewModel: FindYouViewModel) {
     } else {
         val userData = viewModel.userData.value
         val g = if (userData?.gender.isNullOrEmpty()) "ANY" else userData!!.gender!!.uppercase()
-        val gPref = if (userData?.gender.isNullOrEmpty()) "ANY" else userData!!.gender!!.uppercase()
+        val gPref = if (userData?.genderPreference.isNullOrEmpty()) "ANY" else userData!!.genderPreference!!.uppercase()
         var name by rememberSaveable {
             mutableStateOf(userData?.name ?: "")
         }
