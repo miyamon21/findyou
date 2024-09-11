@@ -79,11 +79,6 @@ dependencies {
     //firebase
     implementation(platform("com.google.firebase:firebase-bom:29.0.0"))
     implementation("com.google.firebase:firebase-analytics-ktx")
-//    implementation("com.google.firebase:firebase-auth:23.0.0")
-//    implementation("com.google.firebase:firebase-auth-ktx")
-//    implementation("com.google.firebase:firebase-firestore-ktx")
-//    implementation("com.google.firebase:firebase-storage-ktx")
-//    implementation("com.google.firebase:firebase-firestore:25.1.0")
     implementation("com.google.firebase:firebase-auth:23.0.0")
     implementation("com.google.firebase:firebase-firestore:25.1.0")
     implementation("com.google.firebase:firebase-storage:21.0.0")
